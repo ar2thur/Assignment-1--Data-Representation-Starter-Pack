@@ -33,28 +33,38 @@ void div_convertr(uint32_t n, int base, char *out) {
     
 }
 
-void sub_convert(uint32_t n, int base, char *out){
-    char temp[65];
+void sub_convert(uint32_t n, int base, char *out) {
     int pos = 0;
-    while(pos <= 3){
-        uint32_t newBase = 0;
-        uint32_t convert = 0;
-        while(base <= n){ //finds the highest power
-            base *= base;
-            newBase = base;
-        }
-        if(n <= newBase){
-            convert = n;
-            pos++;
-            break;
-        }
-        while(n > newBase){
-            n -= newBase; //subtracts
-            convert++;
-        }
-        out[pos] = '0' + convert;
-        pos++;
+
+    if (n == 0) {
+        out[0] = '0'; //0 case
+        out[1] = '\0';
+        return;
     }
+
+    //highest power (had to work backwords because of errors)
+    uint32_t temp = n;
+    int max_power = 0;
+    while (temp >= base) {
+        temp /= base;
+        max_power++;
+    }
+    for (int power = max_power; power >= 0; power--) { //lesson learned, FOR LOOPS ARE SO MUCH BETTER
+        uint32_t base_power = 1;
+
+        for (int i = 0; i < power; i++) {
+            base_power *= base;
+        }
+
+        uint32_t digit = 0;
+        while (n >= base_power) {
+            n -= base_power;
+            digit++;
+        }
+
+        out[pos++] = '0' + digit;
+    }
+
     out[pos] = '\0';
 }
 
@@ -65,6 +75,8 @@ int main(){
     uint32_t n = 156;
     int base = 8;
     char out[256];
+
+    div_convertr(n, base, out);
 
     printf("String: %s\n", out);
 
